@@ -1,0 +1,58 @@
+---
+- name: Update repo cache and install a few prerequisite packages
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
+    update_cache: true
+
+- name: Add official MySQL Server package authentication key
+  apt_key:
+    data: "{{ lookup('file', 'mysql_pubkey.asc') }}"
+    state: present
+
+- name: Add the MySQL Server repository to APT sources
+  template:
+    src: mysql_server.list.j2
+    dest: /etc/apt/sources.list.d/mysql_server.list
+    mode: '0644'
+
+- name: Set MySQL Server root password
+  debconf:
+    name: mysql-community-server
+    question: mysql-community-server/root-pass
+    value: "{{ mysql_root_password }}"
+    vtype: password
+  changed_when: false
+
+- name: Confirm MySQL Server root password
+  debconf:
+    name: mysql-community-server
+    question: mysql-community-server/re-root-pass
+    value: "{{ mysql_root_password }}"
+    vtype: password
+  changed_when: false
+
+- name: Enable Legacy Authentication Method for MySQL Server
+  debconf:
+    name: mysql-community-server
+    question: mysql-server/default-auth-override
+    value: Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)
+    vtype: select
+
+- name: Install/Update MySQL Community Server
+  apt:
+    update_cache: true
+    name: mysql-server
+    state: present
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Start and eneble MySQL Community Server service
+  service:
+    name: mysql
+    state: started
+    enabled: true
