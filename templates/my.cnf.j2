@@ -39,11 +39,7 @@ pid-file	= /var/run/mysqld/mysqld.pid
 socket		= /var/run/mysqld/mysqld.sock
 port		= 3306
 basedir		= /usr
-{% if mysql_data_dir is defined %}
-datadir		= {{ mysql_data_dir }}
-{% else %}
-datadir		= /var/lib/mysql
-{% endif %}
+datadir		= {{ mysql_data_dir | default("/var/lib/mysql") }}
 tmpdir		= /var/tmp
 lc-messages-dir	= /usr/share/mysql
 skip-external-locking
@@ -54,11 +50,7 @@ init_connect = 'SET NAMES utf8'
 #
 # Instead of skip-networking the default is now to listen only on
 # localhost which is more compatible and is not less secure.
-{% if mysql_bind_address is defined %}
-bind-address		= {{ mysql_bind_address }}
-{% else %}
-bind-address		= 127.0.0.1
-{% endif %}
+bind-address		= {{ mysql_bind_address | default("127.0.0.1") }}
 #
 # * Fine Tuning
 #

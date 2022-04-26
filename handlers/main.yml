@@ -1,6 +1,4 @@
 ---
-# handlers file for mysql_server
-
 - name: enable mysql service
   service:
     name: mysql

@@ -1,13 +1,12 @@
 ---
 - name: Update repo cache and install a few prerequisite packages
   apt:
-    pkg:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gnupg2
-      - software-properties-common
+    name: "{{ item }}"
+    state: present
     update_cache: true
+  with_items:
+    - apt-transport-https
+    - gnupg2
 
 - name: Add official MySQL Server package authentication key
   apt_key:
@@ -15,10 +14,13 @@
     state: present
 
 - name: Add the MySQL Server repository to APT sources
-  template:
-    src: mysql_server.list.j2
-    dest: /etc/apt/sources.list.d/mysql_server.list
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+    filename: mysql_server
     mode: '0644'
+  with_items:
+    - "deb http://repo.mysql.com/apt/debian/ {{ ansible_distribution_release }} mysql-8.0"
 
 - name: Set MySQL Server root password
   debconf:
@@ -45,9 +47,11 @@
 
 - name: Install/Update MySQL Community Server
   apt:
-    update_cache: true
-    name: mysql-server
+    name: "{{ item }}"
     state: present
+    update_cache: true
+  with_items:
+    - mysql-server
   environment:
     DEBIAN_FRONTEND: noninteractive
 

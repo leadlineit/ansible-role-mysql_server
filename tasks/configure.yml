@@ -1,9 +1,11 @@
 ---
 - name: Adds Python MySQL support
   apt:
-    name:
-      - python3-mysqldb
+    name: "{{ item }}"
     state: present
+    update_cache: true
+  with_items:
+    - python3-mysqldb
 
 - name: Copy my.cnf config file
   template:
