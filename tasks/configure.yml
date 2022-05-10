@@ -1,6 +1,6 @@
 ---
 - name: Adds Python MySQL support
-  apt:
+  ansible.builtin.apt:
     name: "{{ item }}"
     state: present
     update_cache: true
@@ -8,7 +8,7 @@
     - python3-mysqldb
 
 - name: Copy my.cnf config file
-  template:
+  ansible.builtin.template:
     src: my.cnf.j2
     dest: /etc/mysql/my.cnf
     mode: '644'
@@ -16,14 +16,14 @@
     - restart mysql service
 
 - name: Activate passwordless access for root user
-  template:
+  ansible.builtin.template:
     src: .my.cnf.j2
     dest: /root/.my.cnf
     mode: '400'
 
 - name: Root password is present
   no_log: true
-  mysql_user:
+  community.mysql.mysql_user:
     name: "root"
     host_all: true
     password: "{{ mysql_root_password | mandatory }}"
@@ -31,14 +31,14 @@
     login_unix_socket: "{{ login_unix_socket | default(omit) }}"
 
 - name: Delete test databases
-  mysql_db:
+  community.mysql.mysql_db:
     name: test
     state: absent
     login_unix_socket: "{{ login_unix_socket | default(omit) }}"
 
 - name: Delete anonymous users
   no_log: true
-  mysql_user:
+  community.mysql.mysql_user:
     name: ""
     state: absent
     host_all: true
@@ -46,28 +46,28 @@
 
 - name: Secures the MySQL root user for IPV6 localhost (::1)
   no_log: true
-  mysql_user:
+  community.mysql.mysql_user:
     user: "root"
     password: "{{ mysql_root_password }}"
     host: "::1"
 
 - name: Secures the MySQL root user for IPV4 localhost (127.0.0.1)
   no_log: true
-  mysql_user:
+  community.mysql.mysql_user:
     user: "root"
     password: "{{ mysql_root_password }}"
     host: "127.0.0.1"
 
 - name: Secures the MySQL root user for localhost domain (localhost)
   no_log: true
-  mysql_user:
+  community.mysql.mysql_user:
     user: "root"
     password: "{{ mysql_root_password }}"
     host: "localhost"
 
 - name: Secures the MySQL root user for server_hostname domain
   no_log: true
-  mysql_user:
+  community.mysql.mysql_user:
     user: 'root'
     password: "{{ mysql_root_password }}"
     host: "{{ ansible_fqdn }}"

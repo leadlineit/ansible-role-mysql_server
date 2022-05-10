@@ -1,6 +1,6 @@
 ---
 - name: Update repo cache and install a few prerequisite packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ item }}"
     state: present
     update_cache: true
@@ -9,12 +9,12 @@
     - gnupg2
 
 - name: Add official MySQL Server package authentication key
-  apt_key:
+  ansible.builtin.apt_key:
     data: "{{ lookup('file', 'mysql_pubkey.asc') }}"
     state: present
 
 - name: Add the MySQL Server repository to APT sources
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "{{ item }}"
     state: present
     filename: mysql_server
@@ -23,7 +23,7 @@
     - "deb http://repo.mysql.com/apt/debian/ {{ ansible_distribution_release }} mysql-8.0"
 
 - name: Set MySQL Server root password
-  debconf:
+  ansible.builtin.debconf:
     name: mysql-community-server
     question: mysql-community-server/root-pass
     value: "{{ mysql_root_password }}"
@@ -31,7 +31,7 @@
   changed_when: false
 
 - name: Confirm MySQL Server root password
-  debconf:
+  ansible.builtin.debconf:
     name: mysql-community-server
     question: mysql-community-server/re-root-pass
     value: "{{ mysql_root_password }}"
@@ -39,14 +39,14 @@
   changed_when: false
 
 - name: Enable Legacy Authentication Method for MySQL Server
-  debconf:
+  ansible.builtin.debconf:
     name: mysql-community-server
     question: mysql-server/default-auth-override
     value: Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)
     vtype: select
 
 - name: Install/Update MySQL Community Server
-  apt:
+  ansible.builtin.apt:
     name: "{{ item }}"
     state: present
     update_cache: true
@@ -56,7 +56,7 @@
     DEBIAN_FRONTEND: noninteractive
 
 - name: Start and eneble MySQL Community Server service
-  service:
+  ansible.builtin.service:
     name: mysql
     state: started
     enabled: true
