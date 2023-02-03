@@ -1,5 +1,6 @@
 ---
-- hosts: localhost
+- name: Test
+  hosts: localhost
   remote_user: root
   roles:
-    - mysql_server
+    - leadlineit.mysql_server

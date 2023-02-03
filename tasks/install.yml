@@ -45,7 +45,7 @@
     value: Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)
     vtype: select
 
-- name: Install/Update MySQL Community Server
+- name: Install MySQL Community Server
   ansible.builtin.apt:
     name: "{{ item }}"
     state: present

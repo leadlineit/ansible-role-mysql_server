@@ -1,10 +1,10 @@
 ---
-- name: enable mysql service
+- name: Enable mysql service
   ansible.builtin.service:
     name: mysql
     enabled: true
 
-- name: restart mysql service
+- name: Restart mysql service
   ansible.builtin.service:
     name: mysql
     state: restarted

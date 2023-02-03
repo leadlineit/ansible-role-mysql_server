@@ -11,15 +11,19 @@
   ansible.builtin.template:
     src: my.cnf.j2
     dest: /etc/mysql/my.cnf
-    mode: '644'
+    mode: '0644'
+    owner: root
+    group: root
   notify:
-    - restart mysql service
+    - Restart mysql service
 
 - name: Activate passwordless access for root user
   ansible.builtin.template:
     src: .my.cnf.j2
     dest: /root/.my.cnf
-    mode: '400'
+    mode: '0400'
+    owner: root
+    group: root
 
 - name: Root password is present
   no_log: true
@@ -39,7 +43,7 @@
 - name: Delete anonymous users
   no_log: true
   community.mysql.mysql_user:
-    name: ""
+    name: ''
     state: absent
     host_all: true
     login_unix_socket: "{{ login_unix_socket | default(omit) }}"
@@ -47,21 +51,21 @@
 - name: Secures the MySQL root user for IPV6 localhost (::1)
   no_log: true
   community.mysql.mysql_user:
-    user: "root"
+    user: 'root'
     password: "{{ mysql_root_password }}"
     host: "::1"
 
 - name: Secures the MySQL root user for IPV4 localhost (127.0.0.1)
   no_log: true
   community.mysql.mysql_user:
-    user: "root"
+    user: 'root'
     password: "{{ mysql_root_password }}"
     host: "127.0.0.1"
 
 - name: Secures the MySQL root user for localhost domain (localhost)
   no_log: true
   community.mysql.mysql_user:
-    user: "root"
+    user: 'root'
     password: "{{ mysql_root_password }}"
     host: "localhost"
 
